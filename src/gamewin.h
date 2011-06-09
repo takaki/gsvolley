@@ -28,14 +28,13 @@
 typedef struct {
 	GdkWindow *window;
 	cairo_t *cr;
-
 	cairo_pattern_t *pattern_blue;
 	cairo_pattern_t *pattern_red;
 	cairo_pattern_t *pattern_ball;
 	cairo_pattern_t *pattern_penalty;
 } GameWin;
 
-GameWin *gamewin_new(GdkWindow *window);
+GameWin *gamewin_new(cairo_t *crssssss);
 void gamewin_free(GameWin *gw);
 void gamewin_draw_back(GameWin *gw);
 void gamewin_draw_slime(GameWin *gw, Slime *s);

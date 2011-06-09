@@ -40,12 +40,15 @@
 
 static gboolean
 cb_expose_event(GtkWidget *widget,
-                GdkEventExpose *event,
+                cairo_t *cr,
                 gpointer user_data)
 {
+	if (! gtk_cairo_should_draw_window (cr, gtk_widget_get_window(widget))){
+		return FALSE;
+	}
 	GameInfo *gameinfo = user_data;
-	GameWin *gw = gamewin_new(gtk_widget_get_window (widget));
-
+	GameWin *gw = gamewin_new(cr);
+	
 	gamewin_draw_back(gw);
 	gamewin_draw_slime(gw, gameinfo->slime_blue);
 	gamewin_draw_slime(gw, gameinfo->slime_red);
@@ -101,7 +104,7 @@ cb_expose_event(GtkWidget *widget,
 			break;
 	}
 	gamewin_free(gw);
-	
+
 	
 	return FALSE;
 	;
@@ -146,33 +149,33 @@ event_loop(GtkWidget *widget)
 		return FALSE;
 	}
 	gtk_widget_queue_draw (widget);
+	static int c=0;
 	return TRUE;
+	g_print("%d\n",c++); 
 }
 
 int
 main (int argc, char *argv[])
 {
  	GtkWidget *window;
-//	guint timer_id;
-	
-//	gtk_set_locale ();
+
 	gtk_init (&argc, &argv);
 	GameInfo gameinfo = {
 		slime_new(BLUE),
 		slime_new(RED),
-		ball_new()};
-	
+		ball_new()
+	};
+
 	gameinfo_init(&gameinfo);
 	
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_size_request (window, WIN_WIDTH, WIN_HEIGHT);
 	gtk_widget_set_app_paintable(window, TRUE);
-	g_signal_connect(window, "expose_event", G_CALLBACK(cb_expose_event), &gameinfo);
+	g_signal_connect(window, "draw", G_CALLBACK(cb_expose_event), &gameinfo);
 	g_signal_connect(window, "key_press_event", G_CALLBACK(cb_key_press_event), &gameinfo);
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit),
 	                 NULL);
 	gtk_widget_show (window);
-	// timer_id = 
 	g_timeout_add(10, (GSourceFunc)event_loop, window);
 	
 	gtk_main ();

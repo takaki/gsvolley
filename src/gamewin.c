@@ -26,12 +26,11 @@
 #include "defs.h"
 
 GameWin *
-gamewin_new(GdkWindow *window)
+gamewin_new(cairo_t *cr)
 {
 	GameWin *gw = g_new(GameWin, 1);
-	gw->window = window;
 
-	gw->cr = gdk_cairo_create (window);
+	gw->cr = cr;
 	cairo_set_font_size (gw->cr, 16);
 
 	gw->pattern_blue = cairo_pattern_create_rgb(0,0,1);
@@ -44,7 +43,6 @@ gamewin_new(GdkWindow *window)
 void
 gamewin_free(GameWin *gw)
 {
-	cairo_destroy(gw->cr);
 	cairo_pattern_destroy(gw->pattern_blue);
 	cairo_pattern_destroy(gw->pattern_red);
 	cairo_pattern_destroy(gw->pattern_ball);
