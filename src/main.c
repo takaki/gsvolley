@@ -170,6 +170,7 @@ main (int argc, char *argv[])
 	
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_size_request (window, WIN_WIDTH, WIN_HEIGHT);
+	gtk_window_set_has_resize_grip(GTK_WINDOW(window), FALSE);
 	gtk_widget_set_app_paintable(window, TRUE);
 	g_signal_connect(window, "draw", G_CALLBACK(cb_expose_event), &gameinfo);
 	g_signal_connect(window, "key_press_event", G_CALLBACK(cb_key_press_event), &gameinfo);
