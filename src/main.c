@@ -59,37 +59,18 @@ cb_expose_event(GtkWidget *widget,
 
 	switch(gameinfo -> state) {
 		case GS_INIT: 
-			gameinfo_init(gameinfo);
 			break;
 		case GS_PLAY: 
-			slime_move(gameinfo->slime_blue);
-			slime_move(gameinfo->slime_red);
-			gameinfo_collision_ball_slime (gameinfo, BLUE);
-			gameinfo_collision_ball_slime (gameinfo, RED);
-			gameinfo_collision_penalty(gameinfo);
-			ball_move(gameinfo->ball);
-			
-			if (gameinfo->ball->y >= WIN_HEIGHT - BALL_RADIUS) {
-				if ( gameinfo->ball->x <= WIN_WIDTH / 2 ) {
-					gameinfo->state = GS_GOT_BY_RED;
-				} else {
-					gameinfo->state = GS_GOT_BY_BLUE;
-				}
-			}
 			break;
 		case GS_GOT_BY_BLUE:
 			gamewin_show_text_centering (gw, "DROPPED BY RED", 40);		
-			gameinfo_score_move(gameinfo, BLUE);
 			break;	
 		case GS_GOT_BY_RED:
 			gamewin_show_text_centering (gw, "DROPPED BY BLUE", 40);		
-			gameinfo_score_move(gameinfo, RED);
 			break;	
 		case GS_SERVICE_BY_BLUE:
-			gameinfo_serve_set(gameinfo, BLUE);
 			break;
 		case GS_SERVICE_BY_RED:
-			gameinfo_serve_set(gameinfo, RED);
 			break;
 		case GS_WON_BY_BLUE:
 			gamewin_show_text_centering (gw, "PRESS R TO PLAY AGAIN", 80);		
@@ -105,10 +86,9 @@ cb_expose_event(GtkWidget *widget,
 	}
 	gamewin_free(gw);
 
-	
 	return FALSE;
-	;
-};
+	
+}
 
 static gboolean
 cb_key_press_event(GtkWidget *widget,
@@ -143,17 +123,68 @@ cb_key_press_event(GtkWidget *widget,
 }
 
 static gboolean
-event_loop(GtkWidget *widget)
+event_loop(gpointer data)
 {
-	if (gtk_widget_get_window(widget) == NULL) {
-		return FALSE;
+	GameInfo *gameinfo = data;
+
+	switch(gameinfo -> state) {
+		case GS_INIT: 
+			gameinfo_init(gameinfo);
+			break;
+		case GS_PLAY: 
+			slime_move(gameinfo->slime_blue);
+			slime_move(gameinfo->slime_red);
+			gameinfo_collision_ball_slime (gameinfo, BLUE);
+			gameinfo_collision_ball_slime (gameinfo, RED);
+			gameinfo_collision_penalty(gameinfo);
+			ball_move(gameinfo->ball);
+			
+			if (gameinfo->ball->y >= WIN_HEIGHT - BALL_RADIUS) {
+				if ( gameinfo->ball->x <= WIN_WIDTH / 2 ) {
+					gameinfo->state = GS_GOT_BY_RED;
+				} else {
+					gameinfo->state = GS_GOT_BY_BLUE;
+				}
+			}
+			break;
+		case GS_GOT_BY_BLUE:
+			gameinfo_score_move(gameinfo, BLUE);
+			break;	
+		case GS_GOT_BY_RED:
+			gameinfo_score_move(gameinfo, RED);
+			break;	
+		case GS_SERVICE_BY_BLUE:
+			gameinfo_serve_set(gameinfo, BLUE);
+			break;
+		case GS_SERVICE_BY_RED:
+			gameinfo_serve_set(gameinfo, RED);
+			break;
+		case GS_WON_BY_BLUE:
+			break;
+		case GS_WON_BY_RED:
+			break;
+		default:
+			g_error("ERROR!! Unknown Game State\n");
+			break;
 	}
-	gtk_widget_queue_draw (widget);
-	static int c=0;
+			
+	gtk_widget_queue_draw (gameinfo->window);
+	
 	return TRUE;
-	g_print("%d\n",c++); 
 }
 
+static gint
+cb_delete_event(GtkWidget *widget, 
+                GdkEventExpose *event,
+                gpointer data)
+{
+	gint *timeout = data;
+	if (*timeout) {
+		g_source_remove(*timeout);
+	}
+	return FALSE;
+}
+                
 int
 main (int argc, char *argv[])
 {
@@ -169,15 +200,19 @@ main (int argc, char *argv[])
 	gameinfo_init(&gameinfo);
 	
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gameinfo.window = window;
 	gtk_widget_set_size_request (window, WIN_WIDTH, WIN_HEIGHT);
 	gtk_window_set_has_resize_grip(GTK_WINDOW(window), FALSE);
 	gtk_widget_set_app_paintable(window, TRUE);
+
+	int timeout = g_timeout_add(10, event_loop, &gameinfo);
+	
 	g_signal_connect(window, "draw", G_CALLBACK(cb_expose_event), &gameinfo);
 	g_signal_connect(window, "key_press_event", G_CALLBACK(cb_key_press_event), &gameinfo);
+	g_signal_connect(window, "delete_event", G_CALLBACK(cb_delete_event), &timeout);
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit),
 	                 NULL);
 	gtk_widget_show (window);
-	g_timeout_add(10, (GSourceFunc)event_loop, window);
 	
 	gtk_main ();
 

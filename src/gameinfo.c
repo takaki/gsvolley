@@ -163,12 +163,12 @@ gameinfo_collision_penalty (GameInfo *gi)
 		if (gi->ball_owner == BLUE ) {
 			if (gi->score_blue > 1 && gi->wait_count <= 0) {
 				--gi->score_blue;				
-				gi->wait_count = 4;
+				gi->wait_count = 4; // XXX
 			}				
 		} else {
 			if (gi->score_red > 1 && gi->wait_count <= 0) {
 				--gi->score_red;
-				gi->wait_count = 4;
+				gi->wait_count = 4; // XXX
 			}
 		}
 	}

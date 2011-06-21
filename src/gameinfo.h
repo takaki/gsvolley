@@ -20,6 +20,7 @@
 #ifndef GAMEINFO_H
 #define GAMEINFO_H
 
+#include <gtk/gtk.h>
 #include "defs.h"
 #include "slime.h"
 #include "ball.h"
@@ -39,6 +40,7 @@ typedef struct {
 	Slime *slime_blue;
 	Slime *slime_red;
 	Ball *ball;
+	GtkWidget *window;
 	
 	GameState state;
 
