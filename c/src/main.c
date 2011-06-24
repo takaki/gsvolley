@@ -202,7 +202,7 @@ main (int argc, char *argv[])
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gameinfo.window = window;
 	gtk_widget_set_size_request (window, WIN_WIDTH, WIN_HEIGHT);
-	gtk_window_set_has_resize_grip(GTK_WINDOW(window), FALSE);
+	gtk_window_set_resizable (GTK_WINDOW(window), FALSE);
 	gtk_widget_set_app_paintable(window, TRUE);
 
 	int timeout = g_timeout_add(10, event_loop, &gameinfo);

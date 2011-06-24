@@ -11,7 +11,7 @@ gsvolleydoc_DATA = \
 	ChangeLog\
 	INSTALL\
 	NEWS
-
+	
 
 EXTRA_DIST = $(gsvolleydoc_DATA)
 
