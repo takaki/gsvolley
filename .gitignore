@@ -13,3 +13,13 @@ missing
 .anjuta_sym_db.db
 Debug/
 *~
+*.o
+config.log
+c/Makefile
+c/config.h
+c/config.status
+c/src/.deps/
+c/src/Makefile
+c/src/gsvolley
+c/stamp-h1
+
