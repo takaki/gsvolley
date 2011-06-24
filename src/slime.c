@@ -27,7 +27,7 @@ slime_new(TEAM t)
 {
 	Slime *s = g_new(Slime,1);
 	s->team = t;
-	slime_init(s);
+	
 		
 	if (t == BLUE) {
 		s->limit_left = SLIME_RADIUS;
@@ -37,6 +37,7 @@ slime_new(TEAM t)
 		s->limit_right = WIN_WIDTH - SLIME_RADIUS;
 
 	}
+	slime_init(s);
 	return s;	
 }
 

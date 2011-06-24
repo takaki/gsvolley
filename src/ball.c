@@ -24,7 +24,7 @@
 #include <glib.h>
 
 
-#define BALL_Y_INIT 20 
+
 
 Ball*
 ball_new(void)

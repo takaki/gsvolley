@@ -27,6 +27,7 @@ gameinfo_init(GameInfo *gi)
 	ball_init(gi->ball, BLUE);
 	slime_init(gi->slime_blue);
 	slime_init(gi->slime_red);
+	gi->ball_owner = BLUE;
 	gi->ball_count = 1;
 	gi->wait_count = 0;
 	gi->score_blue = SCORE_INIT;

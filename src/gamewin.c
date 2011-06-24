@@ -93,7 +93,7 @@ gamewin_draw_ball(GameWin *gw, Ball *b)
 void
 gamewin_draw_penalty(GameWin *gw, double y)
 {
-    cairo_set_line_width(gw->cr, 5.0);  
+	cairo_set_line_width(gw->cr, 5.0);  
 
 	cairo_set_source(gw->cr, gw->pattern_penalty);
 	cairo_arc(gw->cr, WIN_WIDTH/2,y, PENALTY_RADIUS, // XXX

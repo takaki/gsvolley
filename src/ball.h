@@ -23,7 +23,7 @@
 #include "slime.h"
 #include <glib.h>
 
-
+#define BALL_Y_INIT 20 
 
 
 typedef

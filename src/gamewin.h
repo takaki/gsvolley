@@ -26,7 +26,6 @@
 #include "gameinfo.h"
 
 typedef struct {
-	GdkWindow *window;
 	cairo_t *cr;
 	cairo_pattern_t *pattern_blue;
 	cairo_pattern_t *pattern_red;
