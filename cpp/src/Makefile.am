@@ -18,7 +18,16 @@ AM_CFLAGS =\
 bin_PROGRAMS = cppgsvolley
 
 cppgsvolley_SOURCES = \
-	main.cc
+	main.cc      \
+	defs.h      \
+	ball.cc      \
+	ball.h      \
+	slime.cc      \
+	slime.h      \
+	gamewin.cc      \
+	gamewin.h      \
+	gameinfo.cc      \
+	gameinfo.h
 
 cppgsvolley_LDFLAGS = 
 

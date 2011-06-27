@@ -196,7 +196,7 @@ main (int argc, char *argv[])
 		slime_new(RED),
 		ball_new()
 	};
-
+	
 	gameinfo_init(&gameinfo);
 	
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
