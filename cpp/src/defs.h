@@ -25,7 +25,7 @@ static const int WIN_HEIGHT = 400;
 static const int SLIME_RADIUS = 40;
 
 static const double GRAVITY =	 0.03;
-static const int SCORE_INIT =	3;
+static const int SCORE_INIT =	50;
 static const int BALL_Y_INIT = 20 ;
 static const int BALL_RADIUS		=	10;
 static const double BALL_SERVE_OFFSET	 = 76.5;

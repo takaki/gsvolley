@@ -19,20 +19,29 @@
 
 #ifndef GAMEWIN_H
 #define GAMEWIN_H
+#include <gtkmm.h>
 #include <cairomm/cairomm.h>
 #include "ball.h"
+#include "gameinfo.h"
 
-class GameWin {
+class GameWin: public Gtk::Window {
 	public:
-		GameWin(Cairo::RefPtr<Cairo::Context> cr);
-		~GameWin(){};
+		GameWin();
+	protected:
+		bool cb_delete_event(GdkEventAny*);
+		bool cb_expose_event(const Cairo::RefPtr< Cairo::Context >&);
+		bool cb_key_press(GdkEventKey *);
+		bool event_loop();	
+	private:
 		void draw_back();
 		void draw_ball(const Ball &b);
 		void draw_slime(const Slime &s);
 		void draw_penalty(const double y);
 		void draw_score(const int blue, const int count, const int red);
 		void show_text_centering(const std::string &text, const double y);
-	private:
+
+		GameInfo gameinfo;
+
 		Cairo::RefPtr<Cairo::Context> cr;
 		Cairo::RefPtr<Cairo::SolidPattern> pattern_blue;
 		Cairo::RefPtr<Cairo::SolidPattern> pattern_red;

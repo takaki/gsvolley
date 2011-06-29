@@ -19,18 +19,157 @@
 #include "gamewin.h"
 #include <sstream>
 #include <iomanip>
+#include <iostream>
 
-GameWin::GameWin(Cairo::RefPtr<Cairo::Context> cr):
-cr(cr),
+GameWin::GameWin():
 pattern_blue(Cairo::SolidPattern::create_rgb(0,0,1)),
 pattern_red (Cairo::SolidPattern::create_rgb(1,0,0)),
 pattern_ball (Cairo::SolidPattern::create_rgb(1,1,1)),
 pattern_penalty (Cairo::SolidPattern::create_rgb(0,1,0))
 {
-	cr->set_font_size (16);
+	set_size_request (WIN_WIDTH, WIN_HEIGHT);
+	set_resizable (false);
+	set_app_paintable (true);
+
+	signal_draw().connect(sigc::mem_fun(*this, &GameWin::cb_expose_event ));
+	signal_key_press_event().connect(sigc::mem_fun(*this, &GameWin::cb_key_press),false);
+	signal_delete_event().connect(sigc::mem_fun(*this, &GameWin::cb_delete_event));
+
+	Glib::signal_timeout ().connect(sigc::mem_fun(*this, &GameWin::event_loop),10);
+	gameinfo.init();
 
 }
 
+
+bool
+GameWin::cb_expose_event(const Cairo::RefPtr< Cairo::Context >& cr_)
+{
+	cr = cr_;
+	cr->set_font_size (16);
+	
+	draw_back();
+	draw_slime(gameinfo.get_slime_blue());
+	draw_slime(gameinfo.get_slime_red());
+	draw_penalty(gameinfo.get_penalty_y());
+	draw_ball(gameinfo.get_ball());
+	draw_score(gameinfo.get_score_blue(), gameinfo.get_ball_count(),
+	                   gameinfo.get_score_red());
+
+	switch(gameinfo.get_state()) {
+		case GS_INIT: 
+			break;
+		case GS_PLAY: 
+			break;
+		case GS_GOT_BY_BLUE:
+			show_text_centering ("DROPPED BY RED", 40);		
+			break;	
+		case GS_GOT_BY_RED:
+			show_text_centering ("DROPPED BY BLUE", 40);		
+			break;	
+		case GS_SERVICE_BY_BLUE:
+			break;
+		case GS_SERVICE_BY_RED:
+			break;
+		case GS_WON_BY_BLUE:
+			show_text_centering ("PRESS R TO PLAY AGAIN", 80);		
+			show_text_centering ("WON BY BLUE", 60);		
+			break;
+		case GS_WON_BY_RED:
+			show_text_centering ("PRESS R TO PLAY AGAIN", 80);		
+			show_text_centering ("WON BY RED", 60);		
+			break;
+		default:
+			std::cerr << "ERROR!! Unknown Game State" << std::endl;
+			break;
+	}
+	return false;
+}
+
+bool
+GameWin::cb_key_press (GdkEventKey *ev)
+{
+	switch(ev->keyval) {
+		case GDK_KEY_a:
+			gameinfo.get_slime_blue().set_vx(-1);
+			break;
+		case GDK_KEY_s:
+			gameinfo.get_slime_blue().set_vx(1);
+			break;
+		case GDK_KEY_Left:
+			gameinfo.get_slime_red().set_vx(-1);
+			break;
+		case GDK_KEY_Right:
+			gameinfo.get_slime_red().set_vx(1);
+			break;
+		case GDK_KEY_r:
+			if (gameinfo.get_state() == GS_WON_BY_BLUE ||
+			    gameinfo.get_state() == GS_WON_BY_RED) {
+					gameinfo.set_state(GS_INIT);
+				}
+			break;
+		default:
+			break;
+	}
+
+	return false;
+}
+
+bool
+GameWin::event_loop()
+{
+
+	switch(gameinfo.get_state()) {
+		case GS_INIT: 
+			gameinfo.init();
+			break;
+		case GS_PLAY: 
+			gameinfo.get_slime_blue().move();
+			gameinfo.get_slime_red().move();
+			gameinfo.collision_ball_slime (BLUE);
+			gameinfo.collision_ball_slime (RED);
+			gameinfo.collision_penalty();
+			gameinfo.get_ball().move();
+			
+			if (gameinfo.get_ball().get_y() >= WIN_HEIGHT - BALL_RADIUS) {
+				if ( gameinfo.get_ball().get_x() <= WIN_WIDTH / 2 ) {
+					gameinfo.set_state(GS_GOT_BY_RED);
+				} else {
+					gameinfo.set_state(GS_GOT_BY_BLUE);
+				}
+			}
+			break;
+		case GS_GOT_BY_BLUE:
+			gameinfo.score_move(BLUE);
+			break;	
+		case GS_GOT_BY_RED:
+			gameinfo.score_move(RED);
+			break;	
+		case GS_SERVICE_BY_BLUE:
+			gameinfo.serve_set(BLUE);
+			break;
+		case GS_SERVICE_BY_RED:
+			gameinfo.serve_set(RED);
+			break;
+		case GS_WON_BY_BLUE:
+			break;
+		case GS_WON_BY_RED:
+			break;
+		default:
+			std::cerr << "ERROR!! Unknown Game State" << std::endl;
+			break;
+	}
+	queue_draw ();
+	
+	return true;
+}
+
+bool
+GameWin::cb_delete_event (GdkEventAny*)
+{
+	// timeout signal disconnect???
+	return false;
+}
+	
 void
 GameWin::draw_back()
 {

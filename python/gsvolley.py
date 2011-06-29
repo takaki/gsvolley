@@ -14,7 +14,7 @@ WIN_WIDTH  = 640
 WIN_HEIGHT = 400
 
 GRAVITY           = 0.03
-SCORE_INIT        = 2
+SCORE_INIT        = 50
 
 BALL_RADIUS       = 10
 BALL_SERVE_OFFSET = 76.5

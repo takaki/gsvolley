@@ -1,4 +1,5 @@
-c	fine (gtk+3)
-c++	working (gtk+3)
-Python	fine (gtk+2)
-
+Langage IDE	GTK-version	status
+c	Anjuta	3		fine
+c++	Anjuta	3		fine
+Python	Emacs	2		find
+Java	Eclipse	
