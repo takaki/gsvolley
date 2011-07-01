@@ -37,7 +37,9 @@ typedef enum {
 class GameInfo {
 	public:
 		GameInfo();
+//	private:
 		void init();
+	public:
 		void score_move(TEAM win);
 		void serve_set(TEAM win);
 		void collision_ball_slime(TEAM t);

@@ -24,7 +24,9 @@
 GameInfo::GameInfo() :
 slime_blue(BLUE),
 slime_red(RED)
-{}
+{
+	init();
+}
 
 void
 GameInfo::init()
