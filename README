@@ -1,5 +1,6 @@
 Langage IDE	GTK-version	status
 c	Anjuta	3		fine
 c++	Anjuta	3		fine
-Python	Emacs	2		find
-Java	Eclipse	
+Python	Emacs	2		fine
+Java	Eclipse	2		not work well
+Ruby	Emacs	2		fine
