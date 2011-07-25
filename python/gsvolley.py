@@ -24,10 +24,7 @@ PENALTY_RADIUS    = 30
 SLIME_RADIUS = 40
 
 class Ball():
-    def __init__(self):
-        self.init(Slime.BLUE)
-
-    def init(self, team):
+    def __init__(self, team):
         if team == Slime.BLUE:
             self.x = BALL_SERVE_OFFSET
         else:
@@ -82,7 +79,7 @@ class GameInfo():
 
 
     def init(self):
-        self.ball.init(Slime.BLUE)
+        self.ball = Ball(Slime.BLUE)
         self.slime_blue.init()
         self.slime_red.init()
         
@@ -122,9 +119,9 @@ class GameInfo():
 
     def serve_set(self, win):
         if win == Slime.BLUE:
-            self.ball.init(Slime.BLUE)
+            self.ball = Ball(Slime.BLUE)
         else:
-            self.ball.init(Slime.RED)
+            self.ball = Ball(Slime.RED)
         self.slime_blue.init()
         self.slime_red.init()
         self.penalty_y = random.uniform(120, WIN_HEIGHT -  40)
@@ -368,7 +365,7 @@ def main():
     gameinfo = GameInfo()
     gameinfo.slime_blue = Slime(Slime.BLUE)
     gameinfo.slime_red =  Slime(Slime.RED)
-    gameinfo.ball = Ball()
+    gameinfo.ball = Ball(Slime.BLUE)
     gameinfo.window = window
     gameinfo.init()
 
