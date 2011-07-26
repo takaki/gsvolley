@@ -21,7 +21,7 @@ SLIME_RADIUS = 40
 class Ball
   attr_reader :x, :y, :vx, :vy
   attr_writer :vx, :vy
-  def init(team)
+  def initialize(team)
     if team == :blue
       @x = BALL_SERVE_OFFSET
     else
@@ -92,15 +92,14 @@ class GameInfo
   def initialize
     @slime_blue = Slime.new(:blue)
     @slime_red = Slime.new(:red)
-    @ball = Ball.new
+    @ball = Ball.new(:blue)
     @score_blue = SCORE_INIT
     @score_red = SCORE_INIT
     @ball_owner = :blue
     @wait_count = 0
     
-    @ball.init(:blue)
-    @slime_blue.init
-    @slime_red.init
+    # @slime_blue.init
+    # @slime_red.init
     @ball_count = 1
     @state = :gs_init
     @penalty_y = 0
@@ -120,12 +119,12 @@ class GameInfo
         if win == :blue
           @score_red -= 1
           if @score_red < 0 
-            state = :gs_won_by_blue
+            @state = :gs_won_by_blue
           end
         else
           @score_blue -= 1
           if @score_blue < 0 
-            state = :gs_won_by_red
+            @state = :gs_won_by_red
           end
         end
       end
@@ -144,9 +143,9 @@ class GameInfo
 
   def serve_set(win) 
     if win == :blue
-      @ball.init(:blue)
+      @ball = Ball.new(:blue)
     else
-      @ball.init(:red)
+      @ball = Ball.new(:red)
     end
     @slime_blue.init
     @slime_red.init
