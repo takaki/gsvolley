@@ -289,7 +289,6 @@ sub new {
 
     $self->signal_connect(expose_event => sub  {
 	my ($widget, $event) = @_;
-	# my $cr = Gtk2::Gdk::Cairo::Context->create($widget->window());
 	$self->{cr} = Gtk2::Gdk::Cairo::Context->create($widget->window());
 	$self->{cr}->set_source_rgb(0,0,0);
 	$self->{cr}->set_font_size(16);
@@ -453,17 +452,10 @@ sub new {
 	$self->queue_draw;
 	1;
 		       });
- 
-
     return bless $self;
 }
 
-
-
 package main;
-
-
-my $b = new Ball "blue";
 
 Gtk2::init;
 my $window = GameWin->new;
