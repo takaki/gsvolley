@@ -1,9 +1,9 @@
 
 
 public class Ball {
-	private static final double BALL_SERVE_OFFSET = 76.5;
-	private static final double BALL_Y_INIT = 20;
-	static final double BALL_RADIUS = 10;
+	private static final double SERVE_OFFSET = 76.5;
+	private static final double Y_INIT = 20;
+	static final double RADIUS = 10;
 	private static final double GRAVITY = 0.03;
 	private double x = 0;
 	private double y = 0;
@@ -30,11 +30,11 @@ public class Ball {
 	
 	public void init(Slime.TEAM t) {
 		if ( t == Slime.TEAM.BLUE ) {
-			x = BALL_SERVE_OFFSET;
+			x = SERVE_OFFSET;
 		} else {
-			x = GameWin.WIN_WIDTH - BALL_SERVE_OFFSET;
+			x = GameWin.WIN_WIDTH - SERVE_OFFSET;
 		}
-		y = BALL_Y_INIT;
+		y = Y_INIT;
 		vx = 0;
 		vy = 0;
 	}
@@ -43,14 +43,14 @@ public class Ball {
 		x += vx;
 		y += vy;
 		
-		if ( x < 0 + BALL_RADIUS) {
-			x = (BALL_RADIUS - x) + BALL_RADIUS;
+		if ( x < 0 + RADIUS) {
+			x = (RADIUS - x) + RADIUS;
 			vx = - vx;
 
 		};
-		if ( x > GameWin.WIN_WIDTH - BALL_RADIUS) {
-			x = (GameWin.WIN_WIDTH - BALL_RADIUS) - 
-			(x - (GameWin.WIN_WIDTH - BALL_RADIUS)); 	
+		if ( x > GameWin.WIN_WIDTH - RADIUS) {
+			x = (GameWin.WIN_WIDTH - RADIUS) - 
+			(x - (GameWin.WIN_WIDTH - RADIUS)); 	
 			vx = - vx; 
 		}
 	}

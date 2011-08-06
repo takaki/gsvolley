@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Random;
 
 public class GameInfo {
@@ -141,7 +140,7 @@ public class GameInfo {
 				GameWin.WIN_HEIGHT - (b.getY() + b.getVy()) };
 		double c = inner_product(v_a, v_s) * inner_product(v_b, v_s);
 		double d = Math.abs(outer_product(v_s, v_a)) / norm(v_s);
-		double r = Slime.SLIME_RADIUS + Ball.BALL_RADIUS;
+		double r = Slime.RADIUS + Ball.RADIUS;
 
 		if (d <= r && (c <= 0 || r > norm(v_a) || r > norm(v_b))) {
 			double dx_0 = b.getX() - s.getX();
@@ -165,7 +164,7 @@ public class GameInfo {
 		final Ball b = ball;
 		double v[] = { b.getX() - GameWin.WIN_WIDTH / 2, b.getY() - penalty_y };
 
-		if (norm(v) < GameWin.PENALTY_RADIUS + Ball.BALL_RADIUS) {
+		if (norm(v) < GameWin.PENALTY_RADIUS + Ball.RADIUS) {
 			--wait_count;
 			if (ball_owner == Slime.TEAM.BLUE) {
 				if (score_blue > 1 && wait_count <= 0) {

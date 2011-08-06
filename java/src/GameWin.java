@@ -3,9 +3,7 @@ import java.util.TimerTask;
 
 import org.freedesktop.cairo.Context;
 import org.freedesktop.cairo.SolidPattern;
-import org.gnome.gdk.Color;
 import org.gnome.gdk.Event;
-import org.gnome.gdk.EventExpose;
 import org.gnome.gdk.EventKey;
 import org.gnome.gdk.Keyval;
 import org.gnome.gtk.DrawingArea;
@@ -49,7 +47,7 @@ public class GameWin extends Window {
 				gameinfo.getBall().move();
 
 				if (gameinfo.getBall().getY() >= GameWin.WIN_HEIGHT
-						- Ball.BALL_RADIUS) {
+						- Ball.RADIUS) {
 					if (gameinfo.getBall().getX() <= GameWin.WIN_WIDTH / 2) {
 						gameinfo.setState(GameInfo.GameState.GS_GOT_BY_RED);
 					} else {
@@ -81,7 +79,7 @@ public class GameWin extends Window {
 		}
 	}
 
-	class MyExpose implements Widget.ExposeEvent {
+	class MyExpose implements Widget.Draw {
 		private Context cr;
 
 		private void draw_back() {
@@ -101,13 +99,13 @@ public class GameWin extends Window {
 				cr.setSource(pattern_red);
 			}
 			cr.moveTo(s.getX(), WIN_HEIGHT);
-			cr.arc(s.getX(), WIN_HEIGHT, Slime.SLIME_RADIUS, Math.PI, 0);
+			cr.arc(s.getX(), WIN_HEIGHT, Slime.RADIUS, Math.PI, 0);
 			cr.fill();
 		}
 
 		private void draw_ball(Ball b) {
 			cr.setSource(pattern_ball);
-			cr.arc(b.getX(), b.getY(), Ball.BALL_RADIUS, 0, 2 * Math.PI);
+			cr.arc(b.getX(), b.getY(), Ball.RADIUS, 0, 2 * Math.PI);
 			cr.fill();
 		}
 
@@ -118,8 +116,8 @@ public class GameWin extends Window {
 			cr.arc(WIN_WIDTH / 2, y, PENALTY_RADIUS, // XXX
 					0, 2 * Math.PI);
 			cr.strokePreserve();
-
-			cr.setSource(new Color(0, 0, 0));
+		
+			cr.setSource(0, 0, 0);
 			cr.fill();
 
 			cr.setSource(pattern_penalty);
@@ -128,7 +126,7 @@ public class GameWin extends Window {
 			cr.setLineWidth(5.0);
 			cr.strokePreserve();
 
-			cr.setSource(new Color(0, 0, 0));
+			cr.setSource(0, 0, 0);
 			cr.fill();
 
 		}
@@ -149,10 +147,10 @@ public class GameWin extends Window {
 			cr.moveTo((WIN_WIDTH - width) / 2, y);
 			cr.showLayout(layout);
 		}
-
 		@Override
-		public boolean onExposeEvent(Widget widget, EventExpose event) {
-			cr = new Context(widget.getWindow());
+		public boolean onDraw(Widget arg0, Context arg1) {
+			// TODO Auto-generated method stub
+			cr = arg1;// new Context(widget.getWindow());
 			
 			draw_back();
 			draw_slime(gameinfo.getSlime_blue());
@@ -192,6 +190,8 @@ public class GameWin extends Window {
 
 			return false;
 		}
+
+	
 	}
 
 	public GameWin() {

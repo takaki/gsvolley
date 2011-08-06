@@ -1,7 +1,7 @@
 
 public class Slime {
 	enum TEAM {BLUE, RED};
-	static final int SLIME_RADIUS = 40;
+	static final int RADIUS = 40;
 	final private TEAM team;
 	public TEAM getTeam() {
 		return team;
@@ -24,20 +24,20 @@ public class Slime {
 	Slime(TEAM t) {
 		team = t;
 		if (this.team == TEAM.BLUE) {
-			limit_left = SLIME_RADIUS;
-			limit_right = GameWin.WIN_WIDTH / 2 - SLIME_RADIUS;
+			limit_left = RADIUS;
+			limit_right = GameWin.WIN_WIDTH / 2 - RADIUS;
 			} else {
-				limit_left = GameWin.WIN_WIDTH / 2 + SLIME_RADIUS;
-				limit_right = GameWin.WIN_WIDTH - SLIME_RADIUS;
+				limit_left = GameWin.WIN_WIDTH / 2 + RADIUS;
+				limit_right = GameWin.WIN_WIDTH - RADIUS;
 			}
 		init();
 	}
 	public void init() {
 		if (team == TEAM.BLUE) {
-			x = SLIME_RADIUS;
+			x = RADIUS;
 			vx = 0;
 		} else {
-			x = GameWin.WIN_WIDTH - SLIME_RADIUS;
+			x = GameWin.WIN_WIDTH - RADIUS;
 			vx = 0;
 		}
 	}
