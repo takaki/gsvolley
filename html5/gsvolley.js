@@ -21,7 +21,7 @@ var Team = {
 }
 
 var GS =  {
-    INIT: 10,
+    INIT: 0,
     PLAY: 1,  
     GOT_BY_BLUE: 2,
     GOT_BY_RED: 3,  
