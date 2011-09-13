@@ -38,30 +38,22 @@ ball_new t =
     ball_vy = 0
     }
       
-ball_move b = 
-  let x = ball_x b + ball_vx b
-      y = ball_y b + ball_vy b
-      vx = ball_vx b
-      vy = ball_vy b + gravity in
-  Ball {
-    ball_x = if x < (0 + ball_radius) then
-               (ball_radius - x) + ball_radius
-             else 
-               if ( x > ( win_width - ball_radius )) then
-                 (win_width - ball_radius) - (x - (win_width - ball_radius))
-               else
-                 x,
-    ball_y = y + vy,
-    ball_vx = if or [x < (0 + ball_radius),
-                  x > ( win_width - ball_radius )] then
-                -vx
-              else 
-                vx,
-    ball_vy = vy 
-      }
-
--- gameinfo
-
+ball_move b@Ball{ball_x=x, 
+                 ball_y=y,
+                 ball_vx=vx,
+                 ball_vy=vy} = 
+  reflection b{ball_x = x + vx,
+               ball_y = y + vy,
+               ball_vy = vy + gravity}
+  where reflection b@Ball{ball_x = x, ball_vx = vx} 
+          | x < 0 + ball_radius = b{ ball_x = (ball_radius - x) + ball_radius,
+                                   ball_vx = -vx}
+          | x > win_width - ball_radius =
+            b{ball_x = (win_width - ball_radius) - 
+                       (x - (win_width - ball_radius)),
+              ball_vx = - vx}
+          | otherwise = b
+                                
 data GameState = GS_INIT 
                | GS_PLAY 
                | GS_GOT_BY_BLUE 
@@ -70,7 +62,7 @@ data GameState = GS_INIT
                | GS_SERVICE_BY_RED
                | GS_WON_BY_BLUE
                | GS_WON_BY_RED 
-                 deriving(Show)
+                 deriving(Show, Eq)
 
 data GameInfo = GameInfo {
   gi_slime_blue :: Slime,
@@ -137,10 +129,10 @@ slime_init Slime{
   slime_limit_right=limit_right
   } = Slime {
   slime_team=team,
-  slime_x=if team==Blue then 
-            slime_radius
-          else 
-            ( win_width - slime_radius),
+  slime_x = if team == Blue then 
+              slime_radius
+            else 
+              win_width - slime_radius,
   slime_vx=0,
   slime_limit_left=limit_left,
   slime_limit_right=limit_right
@@ -151,13 +143,10 @@ slime_move s@Slime{slime_x=x,
                    slime_limit_left=limit_left,
                    slime_limit_right=limit_right} = 
   let x2 = x + vx in
-  s {slime_x = if x2 < limit_left then
-                 limit_left
-               else
-                 if x2 > limit_right then
-                   limit_right
-                 else
-                   x2,
+  s {slime_x = case () of 
+          _ | x2 < limit_left  -> limit_left
+            | x2 > limit_right -> limit_right
+            | otherwise  -> x2,
      slime_vx = if x2 < limit_left || x2 > limit_right then
                   0
                 else
@@ -246,7 +235,7 @@ cb_key_press_event window gameinfo = do
   keyName <- eventKeyName
   [] <- eventModifier
   liftIO $ case keyName of 
-    "r" -> putStrLn "Key r pressed!"
+    "r" -> modifyIORef gameinfo (restart)
     "a" -> modifyIORef gameinfo (update_gi Blue (-1))
     "s" -> modifyIORef gameinfo (update_gi Blue 1)
     "Left" ->  modifyIORef gameinfo (update_gi Red (-1))
@@ -254,10 +243,13 @@ cb_key_press_event window gameinfo = do
     "Escape" -> mainQuit
     _   -> return ()
   where
-      update_gi Blue vx gi@GameInfo{gi_slime_blue=sb@Slime{}} = 
-        gi{gi_slime_blue=sb{slime_vx=vx}}
-      update_gi Red vx gi@GameInfo{gi_slime_red=sr@Slime{}} = 
-        gi{gi_slime_red=sr{slime_vx=vx}}
+    restart gi@GameInfo{gi_state=state} 
+      | (state ==  GS_WON_BY_RED || state == GS_WON_BY_BLUE) = gameinfo_new
+      | otherwise = gi
+    update_gi Blue vx gi@GameInfo{gi_slime_blue=sb@Slime{}} = 
+      gi{gi_slime_blue=sb{slime_vx=vx}}
+    update_gi Red vx gi@GameInfo{gi_slime_red=sr@Slime{}} = 
+      gi{gi_slime_red=sr{slime_vx=vx}}
 
 cb_timeout window gameinfo = do
   gi <- readIORef gameinfo
@@ -275,11 +267,9 @@ cb_timeout window gameinfo = do
     GS_GOT_BY_RED ->  modifyIORef gameinfo $ score_move Red
     GS_SERVICE_BY_BLUE -> modifyIORef gameinfo $ serve_set Blue
     GS_SERVICE_BY_RED  -> modifyIORef gameinfo $ serve_set Red
-    GS_WON_BY_BLUE -> return () -- OK
-    GS_WON_BY_RED -> return () -- OK
+    GS_WON_BY_BLUE -> return ()
+    GS_WON_BY_RED -> return ()
   widgetQueueDraw window
---  putStrLn (show $ gi_slime_blue gi)
---  putStrLn (show $ gi_state gi)
   return True
   where
     collision_ball_slime t gi@GameInfo{gi_ball=b@Ball{},
@@ -329,7 +319,7 @@ cb_timeout window gameinfo = do
 
     norm (a,b) = sqrt(a*a + b*b)
     inner_product (a,b) (c,d) = a * c + b * d
-    outer_product (a,b) (c,d) = a * c - d * b 
+    outer_product (a,b) (c,d) = a * d - c * b
     update_state state gi@GameInfo{} = gi{gi_state=state}
     update_slime Blue gi@GameInfo{gi_slime_blue=sb@Slime{}} = 
       gi{gi_slime_blue=(slime_move sb)}
@@ -374,8 +364,11 @@ cb_timeout window gameinfo = do
            gi_wait_count = if ball_count == 0 then 50 else 7,
            gi_score_red = if win == Blue then score_red - 1 else score_red,
            gi_score_blue = if win == Red then score_blue - 1 else score_blue,
-           gi_state = if score_red <= 0 then
-                        GS_WON_BY_BLUE
+           gi_state = if win == Blue then
+                         if score_red <= 0 then
+                           GS_WON_BY_BLUE
+                         else
+                           state
                       else
                         if score_blue <= 0 then
                           GS_WON_BY_RED
