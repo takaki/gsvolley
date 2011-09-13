@@ -3,9 +3,8 @@ import Control.Monad.Trans(liftIO)
 import Graphics.UI.Gtk
 import Graphics.Rendering.Cairo
 import Data.IORef
+import System.Random
 
-
--- ball
 ball_y_init = 20 ::Double
 
 win_width  = 640 :: Double
@@ -19,7 +18,6 @@ ball_radius =    10 :: Double
 ball_serve_offset = 76.5
 penalty_radius = 30 :: Double
 
-
 data Ball = Ball {
   ball_x :: Double,
   ball_y :: Double,
@@ -29,10 +27,10 @@ data Ball = Ball {
        
 ball_new t =
   Ball {
-    ball_x =  if t == Blue then
-                ball_serve_offset
-              else
-                win_width - ball_serve_offset,
+    ball_x = if t == Blue then
+               ball_serve_offset
+             else
+               win_width - ball_serve_offset,
     ball_y =  ball_y_init,
     ball_vx = 0,
     ball_vy = 0
@@ -68,7 +66,6 @@ data GameInfo = GameInfo {
   gi_slime_blue :: Slime,
   gi_slime_red :: Slime,
   gi_ball :: Ball,
-  --  window :: GtkWidget
   gi_state :: GameState,
   gi_score_blue :: Int,
   gi_score_red :: Int,
@@ -91,10 +88,6 @@ gameinfo_new = GameInfo {
   gi_wait_count = 0
   }
 
-data GameWin = GameWin {
-  
-  } deriving(Show)
-           
 data Team = Blue
           | Red
           deriving(Show, Eq)
@@ -336,7 +329,10 @@ cb_timeout window gameinfo = do
           gi{gi_state = GS_GOT_BY_BLUE}
       else
         gi
-    serve_set team gi@GameInfo{gi_ball=ball,gi_slime_blue=sb,gi_slime_red=sr} = 
+    serve_set team gi@GameInfo{gi_ball=ball,
+                               gi_slime_blue=sb,
+                               gi_slime_red=sr} =  do 
+      -- r <- getStdRandom (randomR(120, win_height - 40))
       update_state GS_PLAY gi{
         gi_ball = if team == Blue then
                     ball_new Blue
@@ -344,7 +340,7 @@ cb_timeout window gameinfo = do
                     ball_new Red,
         gi_slime_blue=(slime_init sb),
         gi_slime_red=(slime_init sr),
-        gi_penalty_y = 120, -- XXX
+        gi_penalty_y = 200,
         gi_ball_count = 1,
         gi_wait_count = 0}
     score_move win gi@GameInfo{gi_ball_count=ball_count,
