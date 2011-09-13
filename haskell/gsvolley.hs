@@ -109,10 +109,10 @@ data Team = Blue
 
 data Slime = Slime {
   slime_team :: Team,
-  slime_x :: Int,
-  slime_vx :: Int,
-  slime_limit_left ::  Int,
-  slime_limit_right :: Int
+  slime_x :: Double,
+  slime_vx :: Double,
+  slime_limit_left ::  Double,
+  slime_limit_right :: Double
   } deriving(Show)
 
 slime_new team = slime_init Slime {
@@ -120,13 +120,13 @@ slime_new team = slime_init Slime {
   slime_x  = 0,
   slime_vx = 0,
   slime_limit_left = if team == Blue then
-                       (round slime_radius)
+                       slime_radius
                      else
-                       round (win_width / 2 + slime_radius),
+                       win_width / 2 + slime_radius,
   slime_limit_right = if team == Blue then
-                        round (win_width / 2 - slime_radius)
+                        win_width / 2 - slime_radius
                       else
-                        round (win_width - slime_radius)
+                        win_width - slime_radius
   }
 
 slime_init Slime{
@@ -138,9 +138,9 @@ slime_init Slime{
   } = Slime {
   slime_team=team,
   slime_x=if team==Blue then 
-            (round slime_radius) 
+            slime_radius
           else 
-            (round ( win_width - slime_radius)),
+            ( win_width - slime_radius),
   slime_vx=0,
   slime_limit_left=limit_left,
   slime_limit_right=limit_right
@@ -211,9 +211,8 @@ cb_expose_event iogameinfo = do
         else
         do
           pattern_red
-      moveTo (fromIntegral (slime_x s)) win_height
-      arc (fromIntegral (slime_x s)) 
-        win_height slime_radius (1 * pi) 0
+      moveTo (slime_x s) win_height
+      arc (slime_x s) win_height slime_radius (1 * pi) 0
       fill
     draw_ball b = do
       pattern_ball
@@ -289,14 +288,14 @@ cb_timeout window gameinfo = do
                                       gi_slime_red=sr} = 
       let s = if t == Blue then sb else sr
           v_s = (ball_x b, ball_y b)
-          v_a = (fromIntegral (slime_x s) - (ball_x b), win_height - (ball_y b))
-          v_b = (fromIntegral (slime_x s) - ((ball_x b) + (ball_vx b)), 
+          v_a = ((slime_x s) - (ball_x b), win_height - (ball_y b))
+          v_b = ((slime_x s) - ((ball_x b) + (ball_vx b)), 
                  win_height - ((ball_y b)+(ball_vy b)))
           c = (inner_product v_a v_s) * (inner_product v_b v_s)
           d = (abs (outer_product v_s v_a) ) / norm(v_s)
           r = slime_radius + ball_radius in
       if d <= r && (c <= 0 || r > norm(v_a) || r > norm(v_b)) then
-        let dx_0 = (ball_x b) - (fromIntegral (slime_x s))
+        let dx_0 = (ball_x b) - (slime_x s)
             dy_0 = (ball_y b) - win_height
             v = (dx_0, dy_0)
             dist_0 = norm(v)
