@@ -258,8 +258,12 @@ cb_timeout window gameinfo = do
       modifyIORef gameinfo is_drop_ball
     GS_GOT_BY_BLUE -> modifyIORef gameinfo $ score_move Blue
     GS_GOT_BY_RED ->  modifyIORef gameinfo $ score_move Red
-    GS_SERVICE_BY_BLUE -> modifyIORef gameinfo $ serve_set Blue
-    GS_SERVICE_BY_RED  -> modifyIORef gameinfo $ serve_set Red
+    GS_SERVICE_BY_BLUE -> do
+      y <- getStdRandom (randomR(120, win_height - 40))
+      modifyIORef gameinfo $ serve_set y Blue
+    GS_SERVICE_BY_RED  -> do
+      y <- getStdRandom (randomR(120, win_height - 40))
+      modifyIORef gameinfo $ serve_set y Red
     GS_WON_BY_BLUE -> return ()
     GS_WON_BY_RED -> return ()
   widgetQueueDraw window
@@ -329,10 +333,9 @@ cb_timeout window gameinfo = do
           gi{gi_state = GS_GOT_BY_BLUE}
       else
         gi
-    serve_set team gi@GameInfo{gi_ball=ball,
+    serve_set y team gi@GameInfo{gi_ball=ball,
                                gi_slime_blue=sb,
                                gi_slime_red=sr} =  do 
-      -- r <- getStdRandom (randomR(120, win_height - 40))
       update_state GS_PLAY gi{
         gi_ball = if team == Blue then
                     ball_new Blue
@@ -340,7 +343,7 @@ cb_timeout window gameinfo = do
                     ball_new Red,
         gi_slime_blue=(slime_init sb),
         gi_slime_red=(slime_init sr),
-        gi_penalty_y = 200,
+        gi_penalty_y = y,
         gi_ball_count = 1,
         gi_wait_count = 0}
     score_move win gi@GameInfo{gi_ball_count=ball_count,
