@@ -1,10 +1,13 @@
 #!/usr/bin/python
 
+from gi.repository import Gtk, Gdk
+
+
 import sys
 
-import pygtk
-pygtk.require("2.0")
-import gtk
+# import pygtk
+# pygtk.require("2.0")
+# import gtk
 import glib
 import cairo
 import math
@@ -83,6 +86,7 @@ class GameInfo():
         self.slime_blue.init()
         self.slime_red.init()
         
+        self.penalty_y = 0
         self.ball_owner = Slime.BLUE
         self.ball_count = 1
         self.wait_count = 0
@@ -175,9 +179,8 @@ class GameInfo():
             
 
 class GameWin():
-    def __init__(self, window):
-        self.window = window
-        self.cr = window.cairo_create()
+    def __init__(self, cr):
+        self.cr = cr 
         self.cr.set_font_size(16)
 
         self.pattern_blue = cairo.SolidPattern(0,0,1)
@@ -265,8 +268,8 @@ class Slime():
             self.x = self.limit_right
             self.vx = 0
 
-def cb_expose_event(widget, event, gameinfo):
-    gw = GameWin(widget.get_window())
+def cb_expose_event(widget, cr, gameinfo):
+    gw = GameWin(cr)
     gw.draw_back()
     gw.draw_slime(gameinfo.slime_blue)
     gw.draw_slime(gameinfo.slime_red)
@@ -299,7 +302,7 @@ def cb_expose_event(widget, event, gameinfo):
 
 
 def cb_key_press_event(widget, event, gameinfo):
-    key = gtk.gdk.keyval_name(event.keyval)
+    key = Gdk.keyval_name(event.keyval)
     if  key == 'a':
         gameinfo.slime_blue.vx = -1
     elif key == 's':
@@ -360,7 +363,7 @@ def cb_delete_event(widget, event, timeout):
     return False
 
 def main():
-    window = gtk.Window()
+    window = Gtk.Window()
 
     gameinfo = GameInfo()
     gameinfo.slime_blue = Slime(Slime.BLUE)
@@ -374,12 +377,12 @@ def main():
     window.set_resizable(False)
     window.set_app_paintable(True)
     timeout = glib.timeout_add(10, event_loop, gameinfo)
-    window.connect("expose_event", cb_expose_event, gameinfo)
+    window.connect("draw", cb_expose_event, gameinfo)
     window.connect("key_press_event", cb_key_press_event, gameinfo)
     window.connect("delete_event", cb_delete_event, timeout)
-    window.connect("destroy", gtk.main_quit)
+    window.connect("destroy", Gtk.main_quit)
     window.show_all()
-    gtk.main()
+    Gtk.main()
 
 if __name__ == "__main__":
     main()
