@@ -246,7 +246,6 @@ cb_key_press_event window gameinfo = do
 
 cb_timeout window gameinfo = do
   gi <- readIORef gameinfo
-  y <- getStdRandom (randomR(120, win_height - 40))
   case (gi_state gi) of
     GS_INIT -> modifyIORef gameinfo (update_state GS_SERVICE_BY_BLUE)
     GS_PLAY -> do
@@ -259,8 +258,12 @@ cb_timeout window gameinfo = do
       modifyIORef gameinfo is_drop_ball
     GS_GOT_BY_BLUE -> modifyIORef gameinfo $ score_move Blue
     GS_GOT_BY_RED ->  modifyIORef gameinfo $ score_move Red
-    GS_SERVICE_BY_BLUE -> modifyIORef gameinfo $ serve_set y Blue
-    GS_SERVICE_BY_RED  -> modifyIORef gameinfo $ serve_set y Red
+    GS_SERVICE_BY_BLUE -> do
+      y <- getStdRandom (randomR(120, win_height - 40))
+      modifyIORef gameinfo $ serve_set y Blue
+    GS_SERVICE_BY_RED  -> do
+      y <- getStdRandom (randomR(120, win_height - 40))
+      modifyIORef gameinfo $ serve_set y Red
     GS_WON_BY_BLUE -> return ()
     GS_WON_BY_RED -> return ()
   widgetQueueDraw window
