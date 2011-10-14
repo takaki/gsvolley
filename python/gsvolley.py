@@ -95,10 +95,10 @@ class GameInfo():
         self.state = self.GS_SERVICE_BY_BLUE
 
     def score_move(self, win):
-        if self.ball_count > 0:
-            if self.wait_count > 0:
-                self.wait_count -= 1
-            else:
+        if self.wait_count > 0:
+            self.wait_count -= 1
+        else:
+            if self.ball_count > 0:
                 self.ball_count -= 1
                 if self.ball_count == 0:
                     self.wait_count = 50
@@ -112,9 +112,6 @@ class GameInfo():
                     self.score_blue -= 1
                     if self.score_blue <= 0:
                         self.state = GameInfo.GS_WON_BY_RED
-        else:
-            if self.wait_count > 0 :
-                self.wait_count -= 1
             else:
                 if win == Slime.BLUE:
                     self.state = GameInfo.GS_SERVICE_BY_BLUE
